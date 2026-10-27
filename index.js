@@ -59,3 +59,25 @@ const idSchema = joi.object({
     id: joi.number().integer().positive().required(),
     
 })
+
+//middleware untuk Validation body
+function validateBody(schema){
+    return (req, res, next) =>{
+        const {error, value} = schema.validate(req.body,{
+            abortEarly: false, convert: true, allowUnknown: false
+        })
+        if(error){
+            return errorResponse(
+                res,
+                "Validation Error",
+                400, 
+                error.details.map(item =>({
+                    field: item.path.join('.'),
+                    message: item.message
+                }))
+            )
+        }
+        req.body = value
+        next()
+    }
+}
