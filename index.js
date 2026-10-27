@@ -73,11 +73,31 @@ function validateBody(schema){
                 400, 
                 error.details.map(item =>({
                     field: item.path.join('.'),
-                    message: item.message
+                    message: item.message,
                 }))
             )
         }
         req.body = value
+        next()
+    }
+}
+
+//middleware untuk Validation params
+function validateParams(schema){
+    return (req, res, next) =>{
+        const {error, value} = schema.validate(req.params);
+        if(error){
+            return errorResponse(
+                res,
+                'parameter tidak valid',
+                400, 
+                error.details.map(item =>({
+                    field: item.path.join('.'),
+                    message: item.message,
+                }))
+            )
+        }
+        req.params = value
         next()
     }
 }
